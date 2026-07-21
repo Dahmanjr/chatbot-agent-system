@@ -20,19 +20,19 @@ def query(question):
 
 # Page Configuration
 st.set_page_config(
-    page_title="Messenger AI",
+    page_title="Messenger AI Workspace",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling — Messenger Dark Mode Palette
+# Custom CSS — Focused on Ultra-Clear Readability
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+        font-family: 'Inter', -apple-system, sans-serif !important;
     }
 
     /* Messenger Dark Canvas */
@@ -41,15 +41,15 @@ st.markdown("""
         color: #ffffff;
     }
 
-    /* Hide standard Streamlit elements */
+    /* Hide standard Streamlit chrome */
     #MainMenu, footer, header, .stDeployButton {
         visibility: hidden;
     }
 
-    /* Container constraints */
+    /* Container layout width */
     .main .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 2.5rem;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
         max-width: 850px;
     }
 
@@ -59,147 +59,133 @@ st.markdown("""
         align-items: center;
         justify-content: space-between;
         padding-bottom: 1.25rem;
-        margin-bottom: 1.5rem;
-        border-bottom: 1px solid #1c2938;
+        margin-bottom: 1.75rem;
+        border-bottom: 2px solid #1c2938;
     }
 
     .brand-title {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #0084ff 0%, #00c6ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #38bdf8;
         letter-spacing: -0.02em;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
     }
 
     /* Welcome Card */
     .welcome-heading {
-        font-size: 1.85rem;
+        font-size: 2rem;
         font-weight: 800;
         color: #ffffff;
         letter-spacing: -0.02em;
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.5rem;
     }
 
     .welcome-sub {
-        font-size: 1.05rem;
-        color: #93a3b8;
-        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        color: #cbd5e1;
+        margin-bottom: 1.75rem;
     }
 
-    /* Messenger-Style Interactive Buttons */
+    /* Clear Starter Buttons */
     div.stButton > button {
         width: 100%;
         background-color: #162436 !important;
-        color: #e2e8f0 !important;
-        border: 1px solid #24364e !important;
-        border-radius: 18px !important;
-        padding: 0.85rem 1.1rem !important;
+        color: #ffffff !important;
+        border: 2px solid #283d56 !important;
+        border-radius: 16px !important;
+        padding: 1rem 1.2rem !important;
         font-weight: 600 !important;
-        font-size: 0.95rem !important;
+        font-size: 1.05rem !important; /* Larger text */
         text-align: left !important;
         transition: all 0.2s ease-in-out !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
     }
 
     div.stButton > button:hover {
-        background: linear-gradient(135deg, #0084ff 0%, #00c6ff 100%) !important;
-        border-color: #00c6ff !important;
+        background-color: #0084ff !important;
+        border-color: #38bdf8 !important;
         color: #ffffff !important;
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 132, 255, 0.4) !important;
     }
 
-    /* Chat Messages Base Styling */
+    /* Base Chat Container Styling */
     [data-testid="stChatMessage"] {
         border-radius: 18px;
-        padding: 0.9rem 1.2rem;
-        margin-bottom: 0.8rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+        padding: 1.25rem 1.5rem !important;
+        margin-bottom: 1rem !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     }
 
-    /* User Message - Messenger Blue Gradient Bubble */
+    /* USER MESSAGE BUBBLE - Messenger Blue with Crisp White Bold Text */
     [data-testid="stChatMessage"]:has([aria-label*="user"]) {
-        background: linear-gradient(135deg, #0084ff 0%, #00a6ff 100%);
-        border: none;
+        background: #0084ff !important;
+        border: 1px solid #38bdf8 !important;
     }
 
     [data-testid="stChatMessage"]:has([aria-label*="user"]) p {
-        color: #ffffff !important;
-        font-size: 1.02rem !important;
-        line-height: 1.6 !important;
-        font-weight: 500 !important;
+        color: #ffffff !important; /* Pure White */
+        font-size: 1.1rem !important; /* Increased font size */
+        line-height: 1.7 !important; /* Extra breathing space */
+        font-weight: 600 !important; /* Semi-bold for clarity */
     }
 
-    /* Assistant Message - Crisp High-Contrast White Bubble */
+    /* ASSISTANT MESSAGE BUBBLE - High Contrast Soft Slate Card */
     [data-testid="stChatMessage"]:has([aria-label*="assistant"]) {
-        background-color: #1e2d42;
-        border: 1px solid #2c3e55;
+        background-color: #1a2838 !important;
+        border: 2px solid #2d435e !important;
     }
 
     [data-testid="stChatMessage"]:has([aria-label*="assistant"]) p {
-        color: #ffffff !important;
-        font-size: 1.02rem !important;
-        line-height: 1.65 !important;
-        font-weight: 400 !important;
+        color: #ffffff !important; /* Maximum contrast bright white */
+        font-size: 1.1rem !important; /* Increased font size */
+        line-height: 1.75 !important; /* Extra spacing for long paragraphs */
+        font-weight: 500 !important;
+    }
+
+    /* Bold Text inside Assistant Messages */
+    [data-testid="stChatMessage"] strong {
+        color: #38bdf8 !important; /* Highlighting key points in bright sky blue */
+        font-weight: 700 !important;
     }
 
     /* Chat Input Bar */
     [data-testid="stChatInput"] {
-        border-radius: 22px !important;
-        border: 2px solid #24364e !important;
+        border-radius: 20px !important;
+        border: 2px solid #38bdf8 !important;
         background-color: #162436 !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    [data-testid="stChatInput"]:focus-within {
-        border-color: #0084ff !important;
-        box-shadow: 0 0 15px rgba(0, 132, 255, 0.3) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
     }
 
     [data-testid="stChatInput"] input {
-        font-size: 1rem !important;
+        font-size: 1.1rem !important; /* Larger input text */
         color: #ffffff !important;
+        font-weight: 500 !important;
     }
 
     /* Sidebar Styling */
     section[data-testid="stSidebar"] {
         background-color: #080e17;
-        border-right: 1px solid #162436;
-    }
-
-    .sidebar-section-title {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #64748b;
-        margin-top: 1.5rem;
-        margin-bottom: 0.75rem;
+        border-right: 2px solid #162436;
     }
 
     .status-pill {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.35rem 0.8rem;
+        padding: 0.4rem 0.9rem;
         border-radius: 9999px;
-        background-color: rgba(0, 198, 255, 0.12);
-        border: 1px solid rgba(0, 198, 255, 0.3);
+        background-color: rgba(0, 198, 255, 0.15);
+        border: 1.5px solid #00c6ff;
         color: #00c6ff;
-        font-size: 0.82rem;
+        font-size: 0.9rem;
         font-weight: 700;
     }
 
     .status-dot {
-        width: 8px;
-        height: 8px;
+        width: 9px;
+        height: 9px;
         border-radius: 50%;
         background-color: #00c6ff;
-        box-shadow: 0 0 8px #00c6ff;
+        box-shadow: 0 0 10px #00c6ff;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -207,17 +193,12 @@ st.markdown("""
 # Sidebar Controls
 with st.sidebar:
     st.markdown("### Menu")
-    
     st.markdown('<div class="status-pill"><div class="status-dot"></div> Connected</div>', unsafe_allow_html=True)
     st.write("")
     
-    if st.button("➕ New Chat", use_container_width=True):
+    if st.button("➕ Start New Chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
-
-    st.markdown('<div class="sidebar-section-title">System Information</div>', unsafe_allow_html=True)
-    st.caption("**Engine:** Flowise Cloud")
-    st.caption("**Palette:** Messenger Dark Blue")
 
 # Main Header
 st.markdown("""
@@ -236,14 +217,14 @@ if "messages" not in st.session_state:
 if len(st.session_state.messages) == 0:
     st.markdown("""
     <div>
-        <div class="welcome-heading">Welcome back!</div>
-        <div class="welcome-sub">Choose a suggestion below to start messaging:</div>
+        <div class="welcome-heading">How can I help you today?</div>
+        <div class="welcome-sub">Click a prompt below or type your message to begin:</div>
     </div>
     """, unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
     with c1:
-        if st.button("💬 Explain what this assistant can do"):
+        if st.button("💬 What can this AI do?"):
             st.session_state.prompt_trigger = "Explain what this AI assistant can do and how to best interact with it."
         if st.button("📝 Help me summarize a topic"):
             st.session_state.prompt_trigger = "Provide a clean framework for summarizing complex technical documents."
@@ -261,19 +242,19 @@ if "prompt_trigger" in st.session_state:
 
 # Render Message History
 for msg in st.session_state.messages:
-    avatar = "👤" if msg["role"] == "user" else "⚡"
+    avatar = "🧑‍💻" if msg["role"] == "user" else "🤖"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
 # Process Assistant Response
 if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
-    with st.chat_message("assistant", avatar="⚡"):
+    with st.chat_message("assistant", avatar="🤖"):
         with st.spinner("Thinking..."):
             response_text = query(st.session_state.messages[-1]["content"])
             st.markdown(response_text)
             st.session_state.messages.append({"role": "assistant", "content": response_text})
 
 # Native Chat Input
-if user_input := st.chat_input("Message AI..."):
+if user_input := st.chat_input("Type your message here..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.rerun()
