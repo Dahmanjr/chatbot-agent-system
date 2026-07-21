@@ -26,7 +26,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS — Focused on Ultra-Clear Readability
+# Custom CSS — Ultra-Dark Message Boxes for Maximum Text Clarity
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -35,9 +35,9 @@ st.markdown("""
         font-family: 'Inter', -apple-system, sans-serif !important;
     }
 
-    /* Messenger Dark Canvas */
+    /* Messenger Dark Canvas Base */
     .stApp {
-        background-color: #0b141f;
+        background-color: #03070d; /* Ultra deep background */
         color: #ffffff;
     }
 
@@ -60,7 +60,7 @@ st.markdown("""
         justify-content: space-between;
         padding-bottom: 1.25rem;
         margin-bottom: 1.75rem;
-        border-bottom: 2px solid #1c2938;
+        border-bottom: 2px solid #111a26;
     }
 
     .brand-title {
@@ -81,23 +81,23 @@ st.markdown("""
 
     .welcome-sub {
         font-size: 1.1rem;
-        color: #cbd5e1;
+        color: #94a3b8;
         margin-bottom: 1.75rem;
     }
 
     /* Clear Starter Buttons */
     div.stButton > button {
         width: 100%;
-        background-color: #162436 !important;
+        background-color: #0b131f !important;
         color: #ffffff !important;
-        border: 2px solid #283d56 !important;
+        border: 2px solid #1e293b !important;
         border-radius: 16px !important;
         padding: 1rem 1.2rem !important;
         font-weight: 600 !important;
-        font-size: 1.05rem !important; /* Larger text */
+        font-size: 1.05rem !important;
         text-align: left !important;
         transition: all 0.2s ease-in-out !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
     }
 
     div.stButton > button:hover {
@@ -111,60 +111,64 @@ st.markdown("""
     [data-testid="stChatMessage"] {
         border-radius: 18px;
         padding: 1.25rem 1.5rem !important;
-        margin-bottom: 1rem !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        margin-bottom: 1.2rem !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
     }
 
-    /* USER MESSAGE BUBBLE - Messenger Blue with Crisp White Bold Text */
+    /* USER MESSAGE BUBBLE - Dark Messenger Blue Accent with Crisp White Text */
     [data-testid="stChatMessage"]:has([aria-label*="user"]) {
-        background: #0084ff !important;
+        background: #0066cc !important; /* Rich Darker Messenger Blue */
         border: 1px solid #38bdf8 !important;
     }
 
     [data-testid="stChatMessage"]:has([aria-label*="user"]) p {
-        color: #ffffff !important; /* Pure White */
-        font-size: 1.1rem !important; /* Increased font size */
-        line-height: 1.7 !important; /* Extra breathing space */
-        font-weight: 600 !important; /* Semi-bold for clarity */
+        color: #ffffff !important; /* Crisp Pure White */
+        font-size: 1.12rem !important; /* Extra crisp font size */
+        line-height: 1.7 !important;
+        font-weight: 600 !important;
     }
 
-    /* ASSISTANT MESSAGE BUBBLE - High Contrast Soft Slate Card */
+    /* ASSISTANT MESSAGE BUBBLE - Deep Dark Onyx Box for Pure Contrast */
     [data-testid="stChatMessage"]:has([aria-label*="assistant"]) {
-        background-color: #1a2838 !important;
-        border: 2px solid #2d435e !important;
+        background-color: #070d14 !important; /* Deep Dark Box */
+        border: 2px solid #1c2b3e !important;
     }
 
     [data-testid="stChatMessage"]:has([aria-label*="assistant"]) p {
-        color: #ffffff !important; /* Maximum contrast bright white */
-        font-size: 1.1rem !important; /* Increased font size */
-        line-height: 1.75 !important; /* Extra spacing for long paragraphs */
+        color: #ffffff !important; /* Ultra-bright White for Maximum Legibility */
+        font-size: 1.12rem !important;
+        line-height: 1.8 !important; /* Spacious line height for reading comfort */
         font-weight: 500 !important;
     }
 
-    /* Bold Text inside Assistant Messages */
+    /* High-contrast Highlight for Bold Words inside Assistant Responses */
     [data-testid="stChatMessage"] strong {
-        color: #38bdf8 !important; /* Highlighting key points in bright sky blue */
+        color: #38bdf8 !important; /* Electric Sky Blue for Key Terms */
         font-weight: 700 !important;
     }
 
-    /* Chat Input Bar */
+    /* Chat Input Bar - Deep Dark Box Styling */
     [data-testid="stChatInput"] {
         border-radius: 20px !important;
-        border: 2px solid #38bdf8 !important;
-        background-color: #162436 !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+        border: 2px solid #0084ff !important;
+        background-color: #070d14 !important; /* Dark Input Box */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8) !important;
     }
 
     [data-testid="stChatInput"] input {
-        font-size: 1.1rem !important; /* Larger input text */
+        font-size: 1.1rem !important;
         color: #ffffff !important;
         font-weight: 500 !important;
     }
 
+    [data-testid="stChatInput"] input::placeholder {
+        color: #64748b !important;
+    }
+
     /* Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background-color: #080e17;
-        border-right: 2px solid #162436;
+        background-color: #020509;
+        border-right: 2px solid #0f172a;
     }
 
     .status-pill {
