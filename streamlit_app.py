@@ -21,18 +21,24 @@ def query(question):
 # Page config
 st.set_page_config(
     page_title="AI Chatbot",
-    page_icon="🤖",
+    page_icon="✨",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS - professional & responsive
+# Custom CSS - colourful & smart professional design
 st.markdown("""
 <style>
-    /* Reset and base */
-    .stApp {
-        background-color: #0b0d14;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .stApp {
+        background: linear-gradient(145deg, #0b0d14 0%, #14172b 50%, #0f1117 100%);
+        background-attachment: fixed;
+        min-height: 100vh;
     }
 
     /* Hide Streamlit's default elements */
@@ -41,74 +47,85 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
-    /* Sidebar styling */
+    /* ---------- SIDEBAR ---------- */
     .css-1d391kg, .css-1d391kg > div {
-        background-color: #0f1117;
-        border-right: 1px solid #2a2d3a;
+        background: rgba(15, 17, 23, 0.85);
+        backdrop-filter: blur(12px);
+        border-right: 1px solid rgba(139, 92, 246, 0.2);
     }
     .sidebar-content {
         padding: 28px 20px;
     }
     .sidebar-title {
-        font-size: 20px;
-        font-weight: 600;
-        color: #ffffff;
-        letter-spacing: -0.3px;
+        font-size: 22px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #a78bfa, #60a5fa, #f472b6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin-bottom: 2px;
+        letter-spacing: -0.5px;
     }
     .sidebar-subtitle {
         font-size: 13px;
-        color: #6b7a8f;
+        color: #8b8fa7;
         margin-bottom: 28px;
         font-weight: 400;
     }
     .sidebar-divider {
-        border-top: 1px solid #2a2d3a;
+        border-top: 1px solid rgba(139, 92, 246, 0.15);
         margin: 16px 0;
     }
     .sidebar-section-header {
         font-size: 11px;
         font-weight: 600;
-        color: #5a6a7e;
+        color: #7c7f9e;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
         margin-top: 24px;
         margin-bottom: 8px;
     }
     .sidebar-item {
         padding: 10px 14px;
-        border-radius: 8px;
-        color: #d1d9e8;
+        border-radius: 10px;
+        color: #c8cbe0;
         font-size: 14px;
         cursor: default;
-        transition: all 0.15s;
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         gap: 10px;
+        border: 1px solid transparent;
     }
     .sidebar-item:hover {
-        background: #1a1d2b;
+        background: rgba(139, 92, 246, 0.1);
+        border-color: rgba(139, 92, 246, 0.3);
         color: #ffffff;
+        transform: translateX(4px);
     }
     .sidebar-item.active {
-        background: #1e293b;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(96, 165, 250, 0.1));
+        border-color: #8b5cf6;
         color: #ffffff;
         font-weight: 500;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
     }
     .sidebar-recent {
         padding: 8px 14px;
-        border-radius: 6px;
-        color: #8a9bb0;
+        border-radius: 8px;
+        color: #8b8fa7;
         font-size: 13px;
         cursor: default;
-        transition: background 0.15s;
+        transition: all 0.2s;
+        border-left: 2px solid transparent;
     }
     .sidebar-recent:hover {
-        background: #1a1d2b;
-        color: #d1d9e8;
+        background: rgba(139, 92, 246, 0.08);
+        color: #d4d8f0;
+        border-left-color: #8b5cf6;
     }
 
-    /* Main container */
+    /* ---------- MAIN AREA ---------- */
     .main-container {
         max-width: 820px;
         margin: 0 auto;
@@ -122,122 +139,155 @@ st.markdown("""
     .chat-header {
         text-align: center;
         padding: 18px 0 8px 0;
-        border-bottom: 1px solid #1f2232;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.15);
         margin-bottom: 12px;
     }
     .chat-header h1 {
-        font-size: 26px;
-        font-weight: 600;
-        color: #ffffff;
+        font-size: 28px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #a78bfa, #60a5fa, #f472b6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin: 0;
         letter-spacing: -0.5px;
+        text-shadow: 0 0 40px rgba(167, 139, 250, 0.15);
     }
     .chat-header p {
-        color: #6b7a8f;
+        color: #8b8fa7;
         font-size: 14px;
         margin: 4px 0 0 0;
         font-weight: 400;
     }
 
-    /* Chat messages container - scrollable */
+    /* Messages wrapper */
     .messages-wrapper {
         flex: 1;
         overflow-y: auto;
         padding: 12px 0 20px 0;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
+        scroll-behavior: smooth;
     }
 
-    /* Greeting card */
+    /* Greeting card - glass with shimmer */
     .greeting-card {
-        background: rgba(26, 29, 43, 0.7);
-        backdrop-filter: blur(4px);
-        border: 1px solid #2a2d3a;
-        border-radius: 20px;
+        background: rgba(26, 29, 43, 0.6);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(139, 92, 246, 0.25);
+        border-radius: 24px;
         padding: 32px 28px;
         margin: 16px 0 24px 0;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    .greeting-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(from 0deg, transparent, rgba(139, 92, 246, 0.05), transparent, rgba(96, 165, 250, 0.05), transparent);
+        animation: shimmer 6s linear infinite;
+        pointer-events: none;
+    }
+    @keyframes shimmer {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
     .greeting-card h2 {
-        color: #ffffff;
-        font-size: 22px;
-        font-weight: 500;
+        color: #f0f0ff;
+        font-size: 24px;
+        font-weight: 600;
         margin: 0 0 8px 0;
+        position: relative;
+        z-index: 1;
     }
     .greeting-card p {
-        color: #94a3b8;
+        color: #b0b4d0;
         font-size: 16px;
         margin: 0 0 22px 0;
-        line-height: 1.5;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
     }
 
-    /* Suggestion chips */
+    /* Suggestion chips - colourful */
     .chip-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 12px;
         margin-top: 4px;
+        position: relative;
+        z-index: 1;
     }
     .chip-container .stButton button {
-        background: #1a1d2b;
-        color: #d1d9e8;
-        border: 1px solid #2a2d3a;
+        background: rgba(139, 92, 246, 0.12);
+        color: #d4d8f0;
+        border: 1px solid rgba(139, 92, 246, 0.25);
         border-radius: 30px;
-        padding: 8px 20px;
+        padding: 10px 22px;
         font-size: 14px;
-        font-weight: 400;
-        transition: all 0.2s;
+        font-weight: 500;
+        transition: all 0.25s ease;
         white-space: nowrap;
         width: auto;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        backdrop-filter: blur(4px);
     }
     .chip-container .stButton button:hover {
-        background: #2a2d3a;
-        border-color: #3b405a;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(96, 165, 250, 0.2));
+        border-color: #8b5cf6;
         color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
     }
 
-    /* Chat bubbles */
+    /* Chat bubbles - colourful */
     .user-bubble {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1, #3b82f6);
         color: #ffffff;
-        padding: 12px 18px;
-        border-radius: 20px 20px 6px 20px;
+        padding: 14px 20px;
+        border-radius: 24px 24px 6px 24px;
         margin: 6px 0 6px auto;
         max-width: 80%;
         width: fit-content;
         word-wrap: break-word;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
         font-size: 15px;
-        line-height: 1.5;
+        line-height: 1.6;
         text-align: left;
+        border: 1px solid rgba(255,255,255,0.08);
     }
     .bot-bubble {
-        background: #1a1d2b;
-        color: #e2e8f0;
-        padding: 12px 18px;
-        border-radius: 20px 20px 20px 6px;
+        background: rgba(26, 29, 43, 0.7);
+        backdrop-filter: blur(8px);
+        color: #e8ecf5;
+        padding: 14px 20px;
+        border-radius: 24px 24px 24px 6px;
         margin: 6px 0;
         max-width: 80%;
         width: fit-content;
         word-wrap: break-word;
-        border: 1px solid #2a2d3a;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.03);
         font-size: 15px;
-        line-height: 1.5;
+        line-height: 1.6;
     }
 
-    /* Input area - sticky bottom */
+    /* Input area - glowing */
     .input-area {
         position: sticky;
         bottom: 0;
-        background: #0b0d14;
+        background: rgba(11, 13, 20, 0.8);
+        backdrop-filter: blur(12px);
         padding: 14px 0 10px 0;
-        border-top: 1px solid #1f2232;
+        border-top: 1px solid rgba(139, 92, 246, 0.15);
         margin-top: 8px;
+        border-radius: 16px 16px 0 0;
     }
     .input-row {
         display: flex;
@@ -248,73 +298,80 @@ st.markdown("""
         flex: 1;
     }
     .stTextInput > div > div > input {
-        background: #1a1d2b;
-        color: #ffffff;
-        border: 1px solid #2a2d3a;
-        border-radius: 16px;
-        padding: 14px 18px;
+        background: rgba(26, 29, 43, 0.7);
+        color: #f0f0ff;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 20px;
+        padding: 14px 20px;
         font-size: 15px;
-        transition: border 0.2s, box-shadow 0.2s;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(4px);
     }
     .stTextInput > div > div > input:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 30px rgba(139, 92, 246, 0.05);
     }
     .stTextInput > div > div > input::placeholder {
-        color: #6b7a8f;
+        color: #6b6f8a;
     }
     .send-btn button {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1, #3b82f6);
         color: white;
         border: none;
-        border-radius: 16px;
-        padding: 12px 28px;
+        border-radius: 20px;
+        padding: 14px 32px;
         font-size: 15px;
-        font-weight: 500;
-        transition: all 0.2s;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        font-weight: 600;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
         width: 100%;
         min-width: 80px;
+        letter-spacing: 0.3px;
     }
     .send-btn button:hover {
-        background: linear-gradient(135deg, #1d4ed8, #1e40af);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 28px rgba(139, 92, 246, 0.45);
+        background: linear-gradient(135deg, #7c3aed, #4f46e5, #2563eb);
     }
     .send-btn button:active {
         transform: translateY(0);
     }
     .input-hint {
-        color: #5a6a7e;
+        color: #6b6f8a;
         font-size: 12px;
         text-align: right;
         margin-top: 6px;
         padding-right: 4px;
     }
 
-    /* Status bar */
+    /* Status bar - pulsing dot */
     .status-bar {
         display: flex;
         justify-content: flex-end;
         align-items: center;
         padding: 10px 0 0 0;
-        color: #6b7a8f;
+        color: #8b8fa7;
         font-size: 13px;
-        border-top: 1px solid #1f2232;
+        border-top: 1px solid rgba(139, 92, 246, 0.1);
         margin-top: 6px;
         gap: 16px;
     }
     .status-dot {
         display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: #22c55e;
+        width: 10px;
+        height: 10px;
+        background: #8b5cf6;
         border-radius: 50%;
-        margin-right: 6px;
-        box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+        margin-right: 8px;
+        box-shadow: 0 0 16px rgba(139, 92, 246, 0.6);
+        animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 16px rgba(139, 92, 246, 0.6); }
+        50% { opacity: 0.6; transform: scale(0.85); box-shadow: 0 0 8px rgba(139, 92, 246, 0.2); }
     }
     .status-url {
-        color: #5a6a7e;
+        color: #6b6f8a;
         font-weight: 400;
     }
     .status-left {
@@ -322,19 +379,19 @@ st.markdown("""
         align-items: center;
     }
 
-    /* Responsive adjustments */
+    /* Responsive */
     @media (max-width: 768px) {
         .main-container {
             padding: 0 12px 16px 12px;
         }
         .chat-header h1 {
-            font-size: 22px;
+            font-size: 24px;
         }
         .greeting-card {
             padding: 24px 18px;
         }
         .greeting-card h2 {
-            font-size: 19px;
+            font-size: 20px;
         }
         .greeting-card p {
             font-size: 15px;
@@ -342,11 +399,11 @@ st.markdown("""
         .user-bubble, .bot-bubble {
             max-width: 90%;
             font-size: 14px;
-            padding: 10px 14px;
+            padding: 12px 16px;
         }
         .chip-container .stButton button {
             font-size: 13px;
-            padding: 6px 16px;
+            padding: 8px 16px;
         }
         .send-btn button {
             padding: 12px 18px;
@@ -355,18 +412,12 @@ st.markdown("""
         }
         .stTextInput > div > div > input {
             font-size: 14px;
-            padding: 12px 14px;
+            padding: 12px 16px;
         }
         .status-bar {
             font-size: 12px;
             flex-wrap: wrap;
             justify-content: center;
-        }
-        .sidebar-title {
-            font-size: 18px;
-        }
-        .sidebar-content {
-            padding: 20px 16px;
         }
     }
 </style>
@@ -376,7 +427,7 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
     <div class="sidebar-content">
-        <div class="sidebar-title">AI Assistant</div>
+        <div class="sidebar-title">✨ AI Assistant</div>
         <div class="sidebar-subtitle">Powered by Flowise</div>
         <div class="sidebar-divider"></div>
         <div style="margin-bottom: 4px;">
@@ -398,7 +449,7 @@ st.markdown('<div class="main-container">', unsafe_allow_html=True)
 # Header
 st.markdown("""
 <div class="chat-header">
-    <h1>🤖 AI Chatbot</h1>
+    <h1>✨ AI Chatbot</h1>
     <p>Powered by Flowise</p>
 </div>
 """, unsafe_allow_html=True)
@@ -421,40 +472,42 @@ for msg in st.session_state.messages:
 if len(st.session_state.messages) == 0:
     st.markdown("""
     <div class="greeting-card">
-        <h2>Hello! I'm your AI assistant.</h2>
+        <h2>👋 Hello! I'm your AI assistant.</h2>
         <p>I'm ready to help you with questions, analysis, writing, and more.<br>
         What would you like to explore today?</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Suggestions using columns for responsive layout
+    # Suggestions with colourful chips
+    st.markdown('<div class="chip-container">', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1,1,1])
     with col1:
-        if st.button("How does this work?", key="suggest1"):
+        if st.button("🚀 How does this work?", key="suggest1"):
             st.session_state.messages.append({"role": "user", "content": "How does this work?"})
             with st.spinner("Thinking..."):
                 answer = query("How does this work?")
             st.session_state.messages.append({"role": "assistant", "content": answer})
             st.rerun()
     with col2:
-        if st.button("Summarize a topic", key="suggest2"):
+        if st.button("📝 Summarize a topic", key="suggest2"):
             st.session_state.messages.append({"role": "user", "content": "Summarize a topic for me"})
             with st.spinner("Thinking..."):
                 answer = query("Summarize a topic for me")
             st.session_state.messages.append({"role": "assistant", "content": answer})
             st.rerun()
     with col3:
-        if st.button("Help me write", key="suggest3"):
+        if st.button("✍️ Help me write", key="suggest3"):
             st.session_state.messages.append({"role": "user", "content": "Help me write something"})
             with st.spinner("Thinking..."):
                 answer = query("Help me write something")
             st.session_state.messages.append({"role": "assistant", "content": answer})
             st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Fourth suggestion as a standalone row
+    # Fourth suggestion centered
     col_extra = st.columns([1,1,1])
     with col_extra[1]:
-        if st.button("Answer a question", key="suggest4"):
+        if st.button("💡 Answer a question", key="suggest4"):
             st.session_state.messages.append({"role": "user", "content": "Answer a question"})
             with st.spinner("Thinking..."):
                 answer = query("Answer a question")
@@ -463,7 +516,7 @@ if len(st.session_state.messages) == 0:
 
 st.markdown('</div>', unsafe_allow_html=True)  # close messages-wrapper
 
-# ---------- INPUT AREA (sticky) ----------
+# ---------- INPUT AREA ----------
 st.markdown('<div class="input-area">', unsafe_allow_html=True)
 with st.container():
     col_input, col_send = st.columns([5, 1])
@@ -475,7 +528,7 @@ with st.container():
             key="user_input"
         )
     with col_send:
-        send = st.button("Send", use_container_width=True)
+        send = st.button("Send 🚀", use_container_width=True)
 
     if send and user_input.strip():
         question = user_input.strip()
