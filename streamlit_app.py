@@ -12,173 +12,176 @@ def query(question):
         result = response.json()
         return result.get("text") or result.get("answer") or str(result)
     except requests.exceptions.ConnectionError:
-        return "Cannot connect to the Flowise server."
+        return "Error: Unable to establish connection to the Flowise server."
     except requests.exceptions.Timeout:
-        return "Request timed out."
+        return "Error: Request timed out. Please try again."
     except requests.exceptions.RequestException as e:
-        return f"Request failed: {str(e)}"
+        return f"Error: Request failed. ({str(e)})"
 
-# Page config
+# Page configuration
 st.set_page_config(
-    page_title="AI Assistant",
-    page_icon="🤖",
+    page_title="Enterprise AI Workspace",
+    page_icon="🧊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS - Bright Baby Blue & White with High Contrast Text
+# Professional CSS Styling
 st.markdown("""
 <style>
-    /* Main Page Background */
+    /* Global Base Styling */
     .stApp {
-        background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        color: #0f172a; /* Deep charcoal black for ultra-clear readability */
+        background-color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #0f172a;
     }
 
-    /* Hide default Streamlit headers & footers */
+    /* Hide Default Chrome Elements */
     #MainMenu, footer, header, .stDeployButton {
         visibility: hidden;
     }
 
-    /* Hero Title Header */
-    .hero-container {
-        text-align: center;
-        padding: 24px 20px 10px 20px;
-        margin-bottom: 16px;
+    /* Header Section */
+    .header-container {
+        background-color: #ffffff;
+        padding: 24px 32px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-    .hero-title {
-        font-size: 2.6rem;
-        font-weight: 800;
-        color: #0284c7; /* Bright sky/baby blue accent */
-        margin-bottom: 6px;
-        letter-spacing: -0.5px;
+    .header-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #0369a1; /* Enterprise Blue */
+        margin: 0;
+        letter-spacing: -0.3px;
     }
-    .hero-subtitle {
-        color: #334155; /* High contrast dark gray */
-        font-size: 1.15rem;
-        font-weight: 500;
+    .header-subtitle {
+        color: #475569;
+        font-size: 0.95rem;
+        font-weight: 400;
+        margin-top: 4px;
     }
 
-    /* Crisp White Welcome Card */
-    .welcome-card {
-        background: #ffffff;
-        border: 2px solid #bae6fd;
-        border-radius: 20px;
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 10px 25px rgba(14, 165, 233, 0.08);
-    }
-    .welcome-card h3 {
-        color: #0369a1;
-        font-size: 1.35rem;
-        margin-bottom: 8px;
+    /* Quick Prompt Cards */
+    .section-title {
+        font-size: 0.85rem;
         font-weight: 700;
-    }
-    .welcome-card p {
-        color: #334155 !important;
-        font-size: 1.05rem;
-        font-weight: 500;
-        margin-bottom: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        margin-bottom: 12px;
     }
     
-    /* Interactive Starter Buttons */
+    /* Executive Starter Buttons */
     div.stButton > button {
         width: 100%;
         background-color: #ffffff !important;
-        color: #0369a1 !important; /* Deep baby-blue shade for clear text */
-        border: 2px solid #7dd3fc !important;
-        border-radius: 14px !important;
-        padding: 12px 20px !important;
+        color: #0369a1 !important;
+        border: 1px solid #bae6fd !important;
+        border-radius: 8px !important;
+        padding: 12px 16px !important;
         font-weight: 600 !important;
-        font-size: 0.98rem !important;
-        transition: all 0.25s ease-in-out !important;
-        box-shadow: 0 4px 12px rgba(186, 230, 253, 0.4);
+        font-size: 0.9rem !important;
+        text-align: left !important;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
     div.stButton > button:hover {
-        background-color: #0284c7 !important;
-        color: #ffffff !important;
+        background-color: #f0f9ff !important;
         border-color: #0284c7 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25);
+        color: #0284c7 !important;
+        box-shadow: 0 2px 4px rgba(2, 132, 199, 0.08);
     }
 
-    /* High Contrast Chat Bubbles & Text */
+    /* High-Contrast Chat Messages */
     [data-testid="stChatMessage"] {
         background-color: #ffffff;
-        border: 1px solid #e0f2fe;
-        border-radius: 16px;
-        padding: 14px 18px;
-        margin-bottom: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     }
     [data-testid="stChatMessage"] p {
-        color: #0f172a !important; /* Deep black-slate for maximum readability */
-        font-size: 1.05rem !important;
+        color: #0f172a !important; /* Pure slate black for crisp text */
+        font-size: 0.98rem !important;
         line-height: 1.6 !important;
-        font-weight: 450 !important;
+        font-weight: 400 !important;
     }
 
-    /* Custom Chat Input Box */
+    /* Chat Input Styling */
     [data-testid="stChatInput"] {
-        border-radius: 16px !important;
-        border: 2px solid #7dd3fc !important;
+        border-radius: 10px !important;
+        border: 1px solid #93c5fd !important;
         background-color: #ffffff !important;
-        box-shadow: 0 4px 16px rgba(2, 132, 199, 0.1) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
     }
     [data-testid="stChatInput"] input {
         color: #0f172a !important;
-        font-size: 1.05rem !important;
-        font-weight: 500 !important;
+        font-size: 0.95rem !important;
     }
 
     /* Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background-color: #f0f9ff;
-        border-right: 2px solid #e0f2fe;
+        background-color: #f1f5f9;
+        border-right: 1px solid #e2e8f0;
     }
-    section[data-testid="stSidebar"] * {
-        color: #0f172a !important;
-    }
-    .sidebar-badge {
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 20px;
-        background-color: #e0f2fe;
-        border: 1.5px solid #7dd3fc;
-        color: #0369a1 !important;
-        font-size: 0.85rem;
+    .sidebar-header {
+        font-size: 1.1rem;
         font-weight: 700;
-        margin-bottom: 12px;
+        color: #0f172a;
+        margin-bottom: 16px;
+    }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background-color: #e0f2fe;
+        border: 1px solid #bae6fd;
+        color: #0369a1;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        background-color: #10b981;
+        border-radius: 50%;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------- SIDEBAR ----------
 with st.sidebar:
-    st.markdown('<span class="sidebar-badge">⚡ POWERED BY FLOWISE</span>', unsafe_allow_html=True)
-    st.title("Control Panel")
-    st.markdown("---")
+    st.markdown('<div class="sidebar-header">Workspace Control</div>', unsafe_allow_html=True)
+    st.markdown('<div class="status-badge"><div class="status-indicator"></div> System Ready</div>', unsafe_allow_html=True)
     
-    if st.button("➕ Start New Chat"):
+    if st.button("➕ New Session", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
 
-    st.markdown("### 📊 Status")
-    st.markdown("🟢 **Agent Status:** Online")
-    st.markdown("⚡ **Latency:** ~240ms")
-    
     st.markdown("---")
-    st.markdown("### 💡 Quick Tip")
-    st.caption("Feel free to ask me questions, request writing help, or summarize documents!")
+    st.markdown("**Infrastructure**")
+    st.caption("Engine: Flowise AI Flow")
+    st.caption("Status: Operational")
 
-# ---------- MAIN CONTENT ----------
+# ---------- MAIN WORKSPACE ----------
 
-# Hero Header
+# Professional Header
 st.markdown("""
-<div class="hero-container">
-    <div class="hero-title">Welcome! How can I help today?</div>
-    <div class="hero-subtitle">Ask questions, brainstorm ideas, or analyze concepts in seconds.</div>
+<div class="header-container">
+    <div>
+        <div class="header-title">AI Knowledge Workspace</div>
+        <div class="header-subtitle">Automated insights, document queries, and tactical analysis</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -186,52 +189,46 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display Prompt Cards if conversation hasn't started
+# Show Prompts Grid if no message exists
 if len(st.session_state.messages) == 0:
-    st.markdown("""
-    <div class="welcome-card">
-        <h3>🚀 Get Started Quickly</h3>
-        <p>Pick one of the suggestions below to instantly test the chatbot:</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Suggested Inquiries</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
-    
     with col1:
-        if st.button("💡 How does Flowise AI work?"):
-            st.session_state.prompt_trigger = "How does Flowise AI work?"
-        if st.button("📝 Help me write a creative story"):
-            st.session_state.prompt_trigger = "Help me write a creative story"
+        if st.button("🔍 Explain the capabilities of this agent"):
+            st.session_state.prompt_trigger = "Explain the primary capabilities of this AI assistant."
+        if st.button("📊 Provide a structured analysis framework"):
+            st.session_state.prompt_trigger = "Provide a structured framework for analyzing technical project proposals."
 
     with col2:
-        if st.button("📊 Summarize complex tech concepts"):
-            st.session_state.prompt_trigger = "Summarize modern technological trends for me in simple terms."
-        if st.button("🎯 Brainstorm 5 startup ideas"):
-            st.session_state.prompt_trigger = "Brainstorm 5 innovative startup ideas for this year."
+        if st.button("📝 Draft a professional executive summary"):
+            st.session_state.prompt_trigger = "Provide an outline for writing an executive summary for a project report."
+        if st.button("⚡ Summarize technical concepts cleanly"):
+            st.session_state.prompt_trigger = "Summarize the core principles of modern cloud architecture."
 
-# Handle Triggered Prompt from Cards
+# Handle Triggered Prompt from Buttons
 if "prompt_trigger" in st.session_state:
     prompt = st.session_state.pop("prompt_trigger")
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-# Render Chat Messages with High Contrast Styling
+# Render Conversation Logs
 for msg in st.session_state.messages:
     if msg["role"] == "user":
-        with st.chat_message("user", avatar="🧑‍💻"):
+        with st.chat_message("user", avatar="👤"):
             st.markdown(msg["content"])
     else:
-        with st.chat_message("assistant", avatar="🤖"):
+        with st.chat_message("assistant", avatar="⚡"):
             st.markdown(msg["content"])
 
-# Trigger API response for unanswered user prompt
+# Process Assistant Response
 if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
-    with st.chat_message("assistant", avatar="🤖"):
-        with st.spinner("Thinking..."):
+    with st.chat_message("assistant", avatar="⚡"):
+        with st.spinner("Processing request..."):
             response_text = query(st.session_state.messages[-1]["content"])
             st.markdown(response_text)
             st.session_state.messages.append({"role": "assistant", "content": response_text})
 
 # Native Chat Input Field
-if user_input := st.chat_input("Type your message here..."):
+if user_input := st.chat_input("Enter your request..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.rerun()
