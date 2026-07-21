@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from datetime import datetime
 
 # Flowise Cloud API endpoint
 API_URL = "https://cloud.flowiseai.com/api/v1/prediction/f01957c9-bd79-4f73-b455-3f7fe2496de3"
@@ -12,7 +13,7 @@ def query(question):
         result = response.json()
         return result.get("text") or result.get("answer") or str(result)
     except requests.exceptions.ConnectionError:
-        return "Unable to connect to the assistant service. Please check your connection."
+        return "Cannot reach the server. Please check your network connection."
     except requests.exceptions.Timeout:
         return "The request timed out. Please try asking again."
     except requests.exceptions.RequestException as e:
@@ -20,25 +21,45 @@ def query(question):
 
 # Page Configuration
 st.set_page_config(
-    page_title="AI Workspace",
-    page_icon="✦",
+    page_title="AI Assistant",
+    page_icon="🔮",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS — Executive Professional Dark Theme
+# Custom CSS directly mapping the HTML :root CSS variables & component styles
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #111118;
+      --panel:     #16161f;
+      --border:    #1f1f2e;
+      --border-hi: #2e2e42;
+      --accent:    #7c6af7;
+      --accent-hi: #9b8dfb;
+      --accent-lo: rgba(124, 106, 247, 0.12);
+      --text:      #e2e2f0;
+      --text-sub:  #7a7a9a;
+      --text-dim:  #3a3a52;
+      --user-bg:   #1d1b36;
+      --user-bd:   #2e2a55;
+      --err:       #f87171;
+      --err-bg:    #1a0e0e;
+      --green:     #34d399;
+      --radius:    14px;
     }
 
-    /* Executive Dark Obsidian Canvas */
+    html, body, [class*="css"] {
+        font-family: 'Inter', system-ui, sans-serif !important;
+    }
+
+    /* Main App Background */
     .stApp {
-        background-color: #090c10;
-        color: #f8fafc;
+        background: var(--bg);
+        color: var(--text);
     }
 
     /* Hide standard Streamlit header & footer */
@@ -46,267 +67,305 @@ st.markdown("""
         visibility: hidden;
     }
 
-    /* Main Container Width & Centering */
+    /* Main Container Padding and Max-Width */
     .main .block-container {
-        padding-top: 2rem;
-        padding-bottom: 3rem;
-        max-width: 860px;
+        padding-top: 1.5rem;
+        padding-bottom: 2.5rem;
+        max-width: 820px;
     }
 
-    /* Professional Top Navigation Bar */
-    .brand-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-bottom: 1.25rem;
-        margin-bottom: 2rem;
-        border-bottom: 1px solid #1e293b;
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
     }
 
-    .brand-title {
-        font-size: 1.35rem;
-        font-weight: 800;
-        color: #f8fafc;
-        letter-spacing: -0.02em;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .brand-title span {
-        color: #38bdf8;
+    .topbar-left h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
     }
 
-    .brand-tag {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #38bdf8;
-        background: rgba(56, 189, 248, 0.08);
-        padding: 0.3rem 0.75rem;
-        border-radius: 9999px;
-        border: 1px solid rgba(56, 189, 248, 0.25);
+    .model-chip {
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--accent-lo);
+      color: var(--accent-hi);
+      border: 1px solid rgba(124,106,247,0.2);
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-weight: 500;
     }
 
-    /* Welcome Header Section */
-    .welcome-heading {
-        font-size: 2.1rem;
-        font-weight: 800;
-        color: #ffffff;
-        letter-spacing: -0.03em;
-        margin-bottom: 0.5rem;
+    /* ── DATE DIVIDER ── */
+    .date-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0 24px 0;
     }
 
-    .welcome-sub {
-        font-size: 1.05rem;
-        color: #94a3b8;
-        margin-bottom: 2rem;
+    .date-divider::before,
+    .date-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
-    /* Professional Dark Action Cards */
+    .date-divider span {
+      font-size: 0.67rem;
+      color: var(--text-dim);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── SUGGESTION CHIPS ── */
     div.stButton > button {
-        width: 100%;
-        background-color: #0e131b !important;
-        color: #f8fafc !important;
-        border: 1px solid #1e293b !important;
-        border-radius: 14px !important;
-        padding: 1rem 1.25rem !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-        text-align: left !important;
-        transition: all 0.2s ease-in-out !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+        background: var(--panel) !important;
+        color: var(--text-sub) !important;
+        border: 1px solid var(--border-hi) !important;
+        border-radius: 20px !important;
+        font-size: 0.78rem !important;
+        padding: 6px 14px !important;
+        font-weight: 400 !important;
+        transition: all 0.15s ease !important;
+        text-align: center !important;
+        width: 100% !important;
     }
 
     div.stButton > button:hover {
-        background-color: #141c28 !important;
-        border-color: #38bdf8 !important;
-        color: #38bdf8 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(56, 189, 248, 0.15) !important;
+        border-color: var(--accent) !important;
+        color: var(--accent-hi) !important;
+        background: var(--accent-lo) !important;
     }
 
-    /* Chat Messages Base Structure */
+    /* ── MESSAGES & BUBBLES ── */
     [data-testid="stChatMessage"] {
-        border-radius: 16px;
-        padding: 1.25rem 1.5rem !important;
-        margin-bottom: 1.2rem !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        border-radius: var(--radius);
+        padding: 12px 16px !important;
+        margin-bottom: 0.75rem !important;
+        font-size: 0.875rem !important;
+        line-height: 1.65 !important;
     }
 
-    /* USER MESSAGE BUBBLE - Deep Steel Blue */
-    [data-testid="stChatMessage"]:has([aria-label*="user"]) {
-        background: #0f172a !important;
-        border: 1px solid #2563eb !important;
-    }
-
-    [data-testid="stChatMessage"]:has([aria-label*="user"]) p {
-        color: #f8fafc !important;
-        font-size: 1.08rem !important;
-        line-height: 1.7 !important;
-        font-weight: 600 !important;
-    }
-
-    /* ASSISTANT MESSAGE BUBBLE - Dark Obsidian Metallic Card */
+    /* Agent Message Styling */
     [data-testid="stChatMessage"]:has([aria-label*="assistant"]) {
-        background-color: #0d1117 !important;
-        border: 1px solid #1e293b !important;
+        background: var(--panel) !important;
+        border: 1px solid var(--border) !important;
+        border-top-left-radius: 4px !important;
+        color: var(--text) !important;
     }
 
-    [data-testid="stChatMessage"]:has([aria-label*="assistant"]) p {
-        color: #f8fafc !important;
-        font-size: 1.08rem !important;
-        line-height: 1.8 !important;
-        font-weight: 400 !important;
+    /* User Message Styling */
+    [data-testid="stChatMessage"]:has([aria-label*="user"]) {
+        background: var(--user-bg) !important;
+        border: 1px solid var(--user-bd) !important;
+        border-top-right-radius: 4px !important;
+        color: var(--text) !important;
     }
 
-    /* Precise Blue Highlights for AI Formatting */
-    [data-testid="stChatMessage"] strong {
-        color: #38bdf8 !important;
-        font-weight: 700 !important;
+    [data-testid="stChatMessage"] p {
+        color: var(--text) !important;
+        font-size: 0.875rem !important;
+        line-height: 1.65 !important;
     }
 
-    /* Code blocks inside chat */
-    [data-testid="stChatMessage"] code {
-        background-color: #161b22 !important;
-        color: #38bdf8 !important;
-        border: 1px solid #30363d !important;
-        border-radius: 6px !important;
-        padding: 0.2rem 0.4rem !important;
-    }
-
-    /* Professional Dark Input Bar */
+    /* ── INPUT ZONE ── */
     [data-testid="stChatInput"] {
-        border-radius: 16px !important;
-        border: 1px solid #1e293b !important;
-        background-color: #0d1117 !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+        background: var(--panel) !important;
+        border: 1px solid var(--border-hi) !important;
+        border-radius: var(--radius) !important;
     }
 
     [data-testid="stChatInput"]:focus-within {
-        border-color: #38bdf8 !important;
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.2) !important;
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 3px rgba(124,106,247,0.1) !important;
     }
 
     [data-testid="stChatInput"] input {
-        font-size: 1.05rem !important;
-        color: #f8fafc !important;
-        font-weight: 500 !important;
+        color: var(--text) !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.875rem !important;
     }
 
     [data-testid="stChatInput"] input::placeholder {
-        color: #64748b !important;
+        color: var(--text-dim) !important;
     }
 
-    /* Professional Dark Sidebar */
+    /* ── SIDEBAR ── */
     section[data-testid="stSidebar"] {
-        background-color: #05070a;
-        border-right: 1px solid #1e293b;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
     }
 
-    .sidebar-section-title {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #64748b;
-        margin-top: 1.5rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .status-pill {
-        display: inline-flex;
+    .sidebar-logo-box {
+        display: flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.4rem 0.9rem;
-        border-radius: 9999px;
-        background-color: rgba(34, 197, 94, 0.08);
-        border: 1px solid rgba(34, 197, 94, 0.25);
-        color: #4ade80;
-        font-size: 0.85rem;
-        font-weight: 700;
+        gap: 12px;
+        padding-bottom: 20px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .orb {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7c6af7, #a78bfa, #60a5fa);
+      background-size: 200% 200%;
+      animation: orbShift 4s ease infinite;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(124,106,247,0.35);
+    }
+
+    @keyframes orbShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .sidebar-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-top: 15px;
+      margin-bottom: 8px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--panel);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 20px;
     }
 
     .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: #22c55e;
-        box-shadow: 0 0 8px #22c55e;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: blink 2.5s ease infinite;
     }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .status-badge p { font-size: 0.75rem; color: var(--text-sub); margin: 0; }
+    .status-badge strong { color: var(--text); font-size: 0.75rem; font-weight: 500; }
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar Controls
+# ── SIDEBAR ──
 with st.sidebar:
-    st.markdown("### Controls")
-    st.markdown('<div class="status-pill"><div class="status-dot"></div> System Active</div>', unsafe_allow_html=True)
-    st.write("")
-    
-    if st.button("➕ Start New Session", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
-
-    st.markdown('<div class="sidebar-section-title">System Architecture</div>', unsafe_allow_html=True)
-    st.caption("**Engine:** Flowise Cloud Agent")
-    st.caption("**Security:** Encrypted Session")
-    st.caption("**Theme:** Executive Dark Obsidian")
-
-# Main Header Bar
-st.markdown("""
-<div class="brand-bar">
-    <div class="brand-title">
-        <span>✦</span> Workspace Assistant
-    </div>
-    <span class="brand-tag">v3.0 Enterprise</span>
-</div>
-""", unsafe_allow_html=True)
-
-# Session State Initialization
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Welcome Screen (Only renders on fresh sessions)
-if len(st.session_state.messages) == 0:
     st.markdown("""
-    <div>
-        <div class="welcome-heading">How can I assist you today?</div>
-        <div class="welcome-sub">Select an enterprise capability below or type a query:</div>
+    <div class="sidebar-logo-box">
+        <div class="orb"></div>
+        <div>
+            <h2 style="font-size: 0.88rem; font-weight: 600; color: var(--text); margin:0;">AI Assistant</h2>
+            <span style="font-size: 0.7rem; color: var(--text-sub);">Powered by Flowise</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
+    st.markdown('<div class="sidebar-label">Workspace</div>', unsafe_allow_html=True)
+    if st.button("💬 New Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+
+    st.markdown('<div class="sidebar-label">Recent</div>', unsafe_allow_html=True)
+    st.caption("• Previous session")
+
+    st.markdown("""
+    <div class="status-badge">
+        <div class="status-dot"></div>
+        <div>
+          <strong>Agent online</strong>
+          <p>localhost:3000</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ── TOPBAR ──
+st.markdown("""
+<div class="topbar">
+  <div class="topbar-left">
+    <h1>Chat</h1>
+    <span class="model-chip">flowise-agent</span>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ── SESSION STATE INITIALIZATION ──
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Date Divider
+st.markdown('<div class="date-divider"><span>Today</span></div>', unsafe_allow_html=True)
+
+# Default Welcome Message (when message history is empty)
+if len(st.session_state.messages) == 0:
+    with st.chat_message("assistant", avatar="🔮"):
+        st.markdown("""
+        Hello! I'm your AI assistant. I'm ready to help you with questions, analysis, writing, and more.
+        
+        What would you like to explore today?
+        """)
+
+    # Suggestion Chips
     c1, c2 = st.columns(2)
     with c1:
-        if st.button("💬 System Capability Overview"):
-            st.session_state.prompt_trigger = "Explain what this AI agent can do and how to best interact with it."
-        if st.button("📝 Technical Document Summarization"):
-            st.session_state.prompt_trigger = "Provide a clean framework for summarizing complex technical documents."
-
+        if st.button("How does this work?"):
+            st.session_state.prompt_trigger = "How does this work?"
+        if st.button("Summarize a topic for me"):
+            st.session_state.prompt_trigger = "Summarize a topic for me"
     with c2:
-        if st.button("💡 Strategic Brainstorming Method"):
-            st.session_state.prompt_trigger = "Share 3 highly effective techniques for brainstorming creative ideas."
-        if st.button("⚡ Cloud Architecture Principles"):
-            st.session_state.prompt_trigger = "Explain key cloud architecture principles in simple terms."
+        if st.button("Help me write something"):
+            st.session_state.prompt_trigger = "Help me write something"
+        if st.button("Answer a question"):
+            st.session_state.prompt_trigger = "Answer a question"
 
-# Process Pre-filled Starter Prompts
+# Handle Suggestion Chips Actions
 if "prompt_trigger" in st.session_state:
     prompt = st.session_state.pop("prompt_trigger")
     st.session_state.messages.append({"role": "user", "content": prompt})
 
 # Render Message History
 for msg in st.session_state.messages:
-    avatar = "👤" if msg["role"] == "user" else "✦"
+    avatar = "👤" if msg["role"] == "user" else "🔮"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
-# Generate AI Assistant Response
+# Process Assistant Query Response
 if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
-    with st.chat_message("assistant", avatar="✦"):
-        with st.spinner("Processing request..."):
+    with st.chat_message("assistant", avatar="🔮"):
+        with st.spinner("Thinking..."):
             response_text = query(st.session_state.messages[-1]["content"])
             st.markdown(response_text)
             st.session_state.messages.append({"role": "assistant", "content": response_text})
 
-# Native Chat Input
-if user_input := st.chat_input("Type your message or command..."):
+# Input Zone
+if user_input := st.chat_input("Message the assistant…"):
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.rerun()
