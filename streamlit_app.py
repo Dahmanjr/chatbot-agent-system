@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-from datetime import datetime
 
 # Flowise Cloud API endpoint
 API_URL = "https://cloud.flowiseai.com/api/v1/prediction/f01957c9-bd79-4f73-b455-3f7fe2496de3"
@@ -24,53 +23,51 @@ st.set_page_config(
     page_title="AI Assistant",
     page_icon="🔮",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
-# Custom CSS directly mapping the HTML :root CSS variables & component styles
+# Custom CSS matching the dark theme with Mobile & High-Contrast Adjustments
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
     :root {
       --bg:        #0a0a0f;
       --surface:   #111118;
-      --panel:     #16161f;
-      --border:    #1f1f2e;
-      --border-hi: #2e2e42;
+      --panel:     #161622;
+      --border:    #242436;
+      --border-hi: #3b3b54;
       --accent:    #7c6af7;
-      --accent-hi: #9b8dfb;
-      --accent-lo: rgba(124, 106, 247, 0.12);
-      --text:      #e2e2f0;
-      --text-sub:  #7a7a9a;
-      --text-dim:  #3a3a52;
-      --user-bg:   #1d1b36;
-      --user-bd:   #2e2a55;
-      --err:       #f87171;
-      --err-bg:    #1a0e0e;
+      --accent-hi: #a79afb;
+      --accent-lo: rgba(124, 106, 247, 0.18);
+      --text:      #f0f0f8;
+      --text-sub:  #a0a0c0;
+      --text-dim:  #626282;
+      --user-bg:   #211d42;
+      --user-bd:   #38326a;
       --green:     #34d399;
       --radius:    14px;
     }
 
-    html, body, [class*="css"] {
+    /* Force dark background across all containers */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
+        background-color: var(--bg) !important;
+        color: var(--text) !important;
         font-family: 'Inter', system-ui, sans-serif !important;
     }
 
-    /* Main App Background */
-    .stApp {
-        background: var(--bg);
-        color: var(--text);
-    }
-
-    /* Hide standard Streamlit header & footer */
-    #MainMenu, footer, header, .stDeployButton {
+    /* Hide standard Streamlit header & footer elements */
+    #MainMenu, footer, header, .stDeployButton, [data-testid="stSidebarNav"] {
         visibility: hidden;
+        display: none;
     }
 
-    /* Main Container Padding and Max-Width */
+    /* Main Container Layout - Mobile Optimized */
     .main .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 2.5rem;
+        padding-top: 1rem !important;
+        padding-bottom: 5rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
         max-width: 820px;
     }
 
@@ -79,8 +76,8 @@ st.markdown("""
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 1rem;
-      margin-bottom: 1.5rem;
+      padding-bottom: 0.8rem;
+      margin-bottom: 1rem;
       border-bottom: 1px solid var(--border);
     }
 
@@ -91,18 +88,18 @@ st.markdown("""
     }
 
     .topbar-left h1 {
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--text);
       margin: 0;
     }
 
     .model-chip {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       font-family: 'JetBrains Mono', monospace;
       background: var(--accent-lo);
       color: var(--accent-hi);
-      border: 1px solid rgba(124,106,247,0.2);
+      border: 1px solid rgba(124,106,247,0.3);
       padding: 3px 8px;
       border-radius: 20px;
       font-weight: 500;
@@ -113,7 +110,7 @@ st.markdown("""
       display: flex;
       align-items: center;
       gap: 12px;
-      margin: 16px 0 24px 0;
+      margin: 12px 0 20px 0;
     }
 
     .date-divider::before,
@@ -125,25 +122,27 @@ st.markdown("""
     }
 
     .date-divider span {
-      font-size: 0.67rem;
-      color: var(--text-dim);
-      font-weight: 500;
-      letter-spacing: 0.06em;
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      font-weight: 600;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
     /* ── SUGGESTION CHIPS ── */
     div.stButton > button {
         background: var(--panel) !important;
-        color: var(--text-sub) !important;
+        color: var(--text) !important;
         border: 1px solid var(--border-hi) !important;
         border-radius: 20px !important;
-        font-size: 0.78rem !important;
-        padding: 6px 14px !important;
-        font-weight: 400 !important;
+        font-size: 0.82rem !important;
+        padding: 8px 14px !important;
+        font-weight: 500 !important;
         transition: all 0.15s ease !important;
         text-align: center !important;
         width: 100% !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
     }
 
     div.stButton > button:hover {
@@ -152,21 +151,21 @@ st.markdown("""
         background: var(--accent-lo) !important;
     }
 
-    /* ── MESSAGES & BUBBLES ── */
+    /* ── MESSAGES & BUBBLES (HIGH CONTRAST FIX) ── */
     [data-testid="stChatMessage"] {
-        border-radius: var(--radius);
-        padding: 12px 16px !important;
-        margin-bottom: 0.75rem !important;
-        font-size: 0.875rem !important;
-        line-height: 1.65 !important;
+        border-radius: var(--radius) !important;
+        padding: 14px 18px !important;
+        margin-bottom: 1rem !important;
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
     }
 
     /* Agent Message Styling */
     [data-testid="stChatMessage"]:has([aria-label*="assistant"]) {
         background: var(--panel) !important;
-        border: 1px solid var(--border) !important;
+        border: 1px solid var(--border-hi) !important;
         border-top-left-radius: 4px !important;
-        color: var(--text) !important;
+        color: #ffffff !important;
     }
 
     /* User Message Styling */
@@ -174,61 +173,87 @@ st.markdown("""
         background: var(--user-bg) !important;
         border: 1px solid var(--user-bd) !important;
         border-top-right-radius: 4px !important;
-        color: var(--text) !important;
+        color: #ffffff !important;
     }
 
-    [data-testid="stChatMessage"] p {
+    /* Text Legibility inside Chat Messages */
+    [data-testid="stChatMessage"] p, 
+    [data-testid="stChatMessage"] li,
+    [data-testid="stChatMessage"] span {
         color: var(--text) !important;
-        font-size: 0.875rem !important;
-        line-height: 1.65 !important;
+        font-size: 0.93rem !important;
+        line-height: 1.6 !important;
     }
 
-    /* ── INPUT ZONE ── */
+    [data-testid="stChatMessage"] code {
+        background: rgba(0, 0, 0, 0.3) !important;
+        color: var(--accent-hi) !important;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    /* ── CHAT INPUT AREA (MOBILE STICKY FIX) ── */
+    [data-testid="stBottom"], [data-testid="stBottom"] > div {
+        background-color: var(--bg) !important;
+    }
+
     [data-testid="stChatInput"] {
-        background: var(--panel) !important;
+        background-color: var(--panel) !important;
         border: 1px solid var(--border-hi) !important;
         border-radius: var(--radius) !important;
     }
 
     [data-testid="stChatInput"]:focus-within {
         border-color: var(--accent) !important;
-        box-shadow: 0 0 0 3px rgba(124,106,247,0.1) !important;
+        box-shadow: 0 0 0 3px rgba(124,106,247,0.2) !important;
     }
 
+    [data-testid="stChatInput"] textarea, 
     [data-testid="stChatInput"] input {
-        color: var(--text) !important;
+        color: #ffffff !important;
+        background-color: transparent !important;
         font-family: 'Inter', sans-serif !important;
-        font-size: 0.875rem !important;
+        font-size: 0.93rem !important;
     }
 
+    [data-testid="stChatInput"] textarea::placeholder,
     [data-testid="stChatInput"] input::placeholder {
-        color: var(--text-dim) !important;
+        color: var(--text-sub) !important;
+    }
+
+    /* Send Button inside Input */
+    [data-testid="stChatInput"] button {
+        background-color: var(--accent) !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+        border: none !important;
     }
 
     /* ── SIDEBAR ── */
     section[data-testid="stSidebar"] {
-        background: var(--surface);
-        border-right: 1px solid var(--border);
+        background-color: var(--surface) !important;
+        border-right: 1px solid var(--border) !important;
     }
 
     .sidebar-logo-box {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding-bottom: 20px;
+        padding-bottom: 16px;
         margin-bottom: 10px;
         border-bottom: 1px solid var(--border);
     }
 
     .orb {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 10px;
       background: linear-gradient(135deg, #7c6af7, #a78bfa, #60a5fa);
       background-size: 200% 200%;
       animation: orbShift 4s ease infinite;
       flex-shrink: 0;
-      box-shadow: 0 0 20px rgba(124,106,247,0.35);
+      box-shadow: 0 0 16px rgba(124,106,247,0.4);
     }
 
     @keyframes orbShift {
@@ -238,11 +263,11 @@ st.markdown("""
     }
 
     .sidebar-label {
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--text-dim);
+      color: var(--text-sub);
       margin-top: 15px;
       margin-bottom: 8px;
     }
@@ -274,6 +299,25 @@ st.markdown("""
 
     .status-badge p { font-size: 0.75rem; color: var(--text-sub); margin: 0; }
     .status-badge strong { color: var(--text); font-size: 0.75rem; font-weight: 500; }
+
+    /* ── MOBILE SPECIFIC RESPONSIVE BREAKPOINTS ── */
+    @media (max-width: 768px) {
+        .main .block-container {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            padding-top: 0.5rem !important;
+        }
+
+        [data-testid="stChatMessage"] {
+            padding: 10px 14px !important;
+            font-size: 0.88rem !important;
+        }
+
+        div.stButton > button {
+            font-size: 0.78rem !important;
+            padding: 6px 10px !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -283,8 +327,8 @@ with st.sidebar:
     <div class="sidebar-logo-box">
         <div class="orb"></div>
         <div>
-            <h2 style="font-size: 0.88rem; font-weight: 600; color: var(--text); margin:0;">AI Assistant</h2>
-            <span style="font-size: 0.7rem; color: var(--text-sub);">Powered by Flowise</span>
+            <h2 style="font-size: 0.9rem; font-weight: 600; color: var(--text); margin:0;">AI Assistant</h2>
+            <span style="font-size: 0.72rem; color: var(--text-sub);">Powered by Flowise</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -333,17 +377,17 @@ if len(st.session_state.messages) == 0:
         What would you like to explore today?
         """)
 
-    # Suggestion Chips
+    # Suggestion Chips (Adaptive Grid)
     c1, c2 = st.columns(2)
     with c1:
-        if st.button("How does this work?"):
+        if st.button("How does this work?", use_container_width=True):
             st.session_state.prompt_trigger = "How does this work?"
-        if st.button("Summarize a topic for me"):
+        if st.button("Summarize a topic for me", use_container_width=True):
             st.session_state.prompt_trigger = "Summarize a topic for me"
     with c2:
-        if st.button("Help me write something"):
+        if st.button("Help me write something", use_container_width=True):
             st.session_state.prompt_trigger = "Help me write something"
-        if st.button("Answer a question"):
+        if st.button("Answer a question", use_container_width=True):
             st.session_state.prompt_trigger = "Answer a question"
 
 # Handle Suggestion Chips Actions
