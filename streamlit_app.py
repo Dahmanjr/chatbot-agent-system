@@ -20,20 +20,20 @@ def query(question):
 
 # Page config
 st.set_page_config(
-    page_title="Flowise AI Assistant",
-    page_icon="⚡",
+    page_title="AI Assistant",
+    page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS - Vivid, modern, glassmorphic design
+# Custom CSS - Bright Baby Blue & White with High Contrast Text
 st.markdown("""
 <style>
-    /* Main Background & Fonts */
+    /* Main Page Background */
     .stApp {
-        background: radial-gradient(circle at top left, #1a103c, #0b0d19, #05060a);
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-        color: #f8fafc;
+        background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #0f172a; /* Deep charcoal black for ultra-clear readability */
     }
 
     /* Hide default Streamlit headers & footers */
@@ -41,79 +41,114 @@ st.markdown("""
         visibility: hidden;
     }
 
-    /* Vibrant Hero Header */
+    /* Hero Title Header */
     .hero-container {
         text-align: center;
-        padding: 30px 20px 10px 20px;
-        margin-bottom: 20px;
+        padding: 24px 20px 10px 20px;
+        margin-bottom: 16px;
     }
     .hero-title {
-        font-size: 2.8rem;
+        font-size: 2.6rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #3b82f6 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 8px;
+        color: #0284c7; /* Bright sky/baby blue accent */
+        margin-bottom: 6px;
         letter-spacing: -0.5px;
     }
     .hero-subtitle {
-        color: #94a3b8;
-        font-size: 1.1rem;
-        font-weight: 400;
+        color: #334155; /* High contrast dark gray */
+        font-size: 1.15rem;
+        font-weight: 500;
     }
 
-    /* Glassmorphic Cards for Suggestions */
+    /* Crisp White Welcome Card */
     .welcome-card {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #ffffff;
+        border: 2px solid #bae6fd;
         border-radius: 20px;
         padding: 24px;
         margin-bottom: 24px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 10px 25px rgba(14, 165, 233, 0.08);
     }
     .welcome-card h3 {
-        color: #f3e8ff;
-        font-size: 1.3rem;
-        margin-bottom: 10px;
-        font-weight: 600;
+        color: #0369a1;
+        font-size: 1.35rem;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+    .welcome-card p {
+        color: #334155 !important;
+        font-size: 1.05rem;
+        font-weight: 500;
+        margin-bottom: 0;
     }
     
-    /* Neon Pill Buttons */
+    /* Interactive Starter Buttons */
     div.stButton > button {
         width: 100%;
-        background: rgba(30, 27, 75, 0.6) !important;
-        color: #e2e8f0 !important;
-        border: 1px solid rgba(168, 85, 247, 0.3) !important;
+        background-color: #ffffff !important;
+        color: #0369a1 !important; /* Deep baby-blue shade for clear text */
+        border: 2px solid #7dd3fc !important;
         border-radius: 14px !important;
         padding: 12px 20px !important;
-        font-weight: 500 !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        backdrop-filter: blur(8px);
+        font-weight: 600 !important;
+        font-size: 0.98rem !important;
+        transition: all 0.25s ease-in-out !important;
+        box-shadow: 0 4px 12px rgba(186, 230, 253, 0.4);
     }
     div.stButton > button:hover {
-        background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(236, 72, 153, 0.3)) !important;
-        border-color: #ec4899 !important;
+        background-color: #0284c7 !important;
         color: #ffffff !important;
+        border-color: #0284c7 !important;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(236, 72, 153, 0.25);
+        box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25);
     }
 
-    /* Sidebar Customization */
+    /* High Contrast Chat Bubbles & Text */
+    [data-testid="stChatMessage"] {
+        background-color: #ffffff;
+        border: 1px solid #e0f2fe;
+        border-radius: 16px;
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    }
+    [data-testid="stChatMessage"] p {
+        color: #0f172a !important; /* Deep black-slate for maximum readability */
+        font-size: 1.05rem !important;
+        line-height: 1.6 !important;
+        font-weight: 450 !important;
+    }
+
+    /* Custom Chat Input Box */
+    [data-testid="stChatInput"] {
+        border-radius: 16px !important;
+        border: 2px solid #7dd3fc !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 4px 16px rgba(2, 132, 199, 0.1) !important;
+    }
+    [data-testid="stChatInput"] input {
+        color: #0f172a !important;
+        font-size: 1.05rem !important;
+        font-weight: 500 !important;
+    }
+
+    /* Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background-color: rgba(11, 13, 25, 0.95);
-        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        background-color: #f0f9ff;
+        border-right: 2px solid #e0f2fe;
+    }
+    section[data-testid="stSidebar"] * {
+        color: #0f172a !important;
     }
     .sidebar-badge {
         display: inline-block;
-        padding: 4px 12px;
+        padding: 6px 14px;
         border-radius: 20px;
-        background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(59, 130, 246, 0.2));
-        border: 1px solid rgba(168, 85, 247, 0.4);
-        color: #c084fc;
-        font-size: 0.8rem;
-        font-weight: 600;
+        background-color: #e0f2fe;
+        border: 1.5px solid #7dd3fc;
+        color: #0369a1 !important;
+        font-size: 0.85rem;
+        font-weight: 700;
         margin-bottom: 12px;
     }
 </style>
@@ -121,11 +156,11 @@ st.markdown("""
 
 # ---------- SIDEBAR ----------
 with st.sidebar:
-    st.markdown('<span class="sidebar-badge">⚡ FLOWISE POWERED</span>', unsafe_allow_html=True)
+    st.markdown('<span class="sidebar-badge">⚡ POWERED BY FLOWISE</span>', unsafe_allow_html=True)
     st.title("Control Panel")
     st.markdown("---")
     
-    if st.button("➕ New Chat Session"):
+    if st.button("➕ Start New Chat"):
         st.session_state.messages = []
         st.rerun()
 
@@ -135,15 +170,15 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 💡 Quick Tip")
-    st.caption("You can ask me to write code, explain complex scientific concepts, or brainstorm new product ideas!")
+    st.caption("Feel free to ask me questions, request writing help, or summarize documents!")
 
 # ---------- MAIN CONTENT ----------
 
-# Hero Section
+# Hero Header
 st.markdown("""
 <div class="hero-container">
-    <div class="hero-title">Welcome to Next-Gen AI</div>
-    <div class="hero-subtitle">Ask questions, generate ideas, or analyze concepts in real time.</div>
+    <div class="hero-title">Welcome! How can I help today?</div>
+    <div class="hero-subtitle">Ask questions, brainstorm ideas, or analyze concepts in seconds.</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -155,8 +190,8 @@ if "messages" not in st.session_state:
 if len(st.session_state.messages) == 0:
     st.markdown("""
     <div class="welcome-card">
-        <h3>🚀 Get Started Fast</h3>
-        <p style="color: #94a3b8; margin-bottom: 0;">Select a starter prompt below to kickstart your conversation:</p>
+        <h3>🚀 Get Started Quickly</h3>
+        <p>Pick one of the suggestions below to instantly test the chatbot:</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -169,20 +204,20 @@ if len(st.session_state.messages) == 0:
             st.session_state.prompt_trigger = "Help me write a creative story"
 
     with col2:
-        if st.button("📊 Summarize complex tech trends"):
-            st.session_state.prompt_trigger = "Summarize modern technology trends for me."
+        if st.button("📊 Summarize complex tech concepts"):
+            st.session_state.prompt_trigger = "Summarize modern technological trends for me in simple terms."
         if st.button("🎯 Brainstorm 5 startup ideas"):
-            st.session_state.prompt_trigger = "Brainstorm 5 innovative startup ideas for 2026."
+            st.session_state.prompt_trigger = "Brainstorm 5 innovative startup ideas for this year."
 
 # Handle Triggered Prompt from Cards
 if "prompt_trigger" in st.session_state:
     prompt = st.session_state.pop("prompt_trigger")
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-# Render Chat Messages via Native Chat Elements
+# Render Chat Messages with High Contrast Styling
 for msg in st.session_state.messages:
     if msg["role"] == "user":
-        with st.chat_message("user", avatar="👤"):
+        with st.chat_message("user", avatar="🧑‍💻"):
             st.markdown(msg["content"])
     else:
         with st.chat_message("assistant", avatar="🤖"):
@@ -191,7 +226,7 @@ for msg in st.session_state.messages:
 # Trigger API response for unanswered user prompt
 if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
     with st.chat_message("assistant", avatar="🤖"):
-        with st.spinner("✨ Processing query..."):
+        with st.spinner("Thinking..."):
             response_text = query(st.session_state.messages[-1]["content"])
             st.markdown(response_text)
             st.session_state.messages.append({"role": "assistant", "content": response_text})
